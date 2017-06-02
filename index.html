@@ -136,24 +136,21 @@
             //     storageBucket: "good-d18bd.appspot.com",
             //     messagingSenderId: "183018367198"
             // };
-  var config = {
-    apiKey: "AIzaSyBvCI2TkaDlbTdB72AIJ5KFd50eA5Ec8ZE",
-    authDomain: "assign-1185a.firebaseapp.com",
-    databaseURL: "https://assign-1185a.firebaseio.com",
-    projectId: "assign-1185a",
-    storageBucket: "assign-1185a.appspot.com",
-    messagingSenderId: "1043113922808"
-  };
-  firebase.initializeApp(config);
-
+                var config = {
+                    apiKey: "AIzaSyBvCI2TkaDlbTdB72AIJ5KFd50eA5Ec8ZE",
+                    authDomain: "assign-1185a.firebaseapp.com",
+                    databaseURL: "https://assign-1185a.firebaseio.com",
+                    projectId: "assign-1185a",
+                    storageBucket: "assign-1185a.appspot.com",
+                    messagingSenderId: "1043113922808"
+                };
+                firebase.initializeApp(config);
         var db             = firebase.database()                  // class : firebase.database
         var rootRef        = db.ref()
-
         var activitiesRef  = rootRef.child("activities")              // class : firebase.reference -> root.activity
         var favoritesRef   = rootRef.child("favorites")
-        var usersRef = rootRef.child("user")
-
         var errorCallback  = function (msg){  alert(msg.message) }
+        var usersRef = rootRef.child("user")
 
         window.app = new Vue({
 
@@ -192,11 +189,9 @@
                     // ASN REQ 3  : signOut here
                     window.location.reload()
                     firebase.auth().signOut()
-                    // Release favritesRef's value listener or just simply calling window.location.reload().
                 },
 
                 // ASN REQ 2 HINT: the two methods `editorCreateActivity` , `editorEditActivity` are used to open editor.
-                // you does not need to modify it.
                 editorCreateActivity: function(){
                     this.editor.activity_id = null
                     this.editor.activity = {
@@ -213,14 +208,13 @@
 
                 // ASN REQ 2 HINT : if `this.editor.activity_id` equals null , it means the editor is creating a new activity!!
                 editorSave : function (){
-
                     if ( this.editor.activity_id === null){
                         // ASN REQ 2 : this means we are creating new activity
                         activitiesRef.push({
                         title: this.editor.activity.title,
                         time: this.editor.activity.time,
-                        address: this.editor.activity.address,
-                        price: this.editor.activity.price
+                        price: this.editor.activity.price,
+                        address: this.editor.activity.address
                           });
                         // you should use one of the functions `updateActivity or createActivity` below
 
@@ -229,8 +223,8 @@
                         activitiesRef.child(this.editor.activity_id).set({
                         title: this.editor.activity.title,
                         time: this.editor.activity.time,
-                        address: this.editor.activity.address,
-                        price: this.editor.activity.price
+                        price: this.editor.activity.price,
+                        address: this.editor.activity.address
                         });
                         // you should use one of the functions `updateActivity or createActivity` below
                     }
@@ -238,7 +232,7 @@
                 },
 
                 toggle_like : function ( activity_id ){
-                    // ASN REQ 4 : update favoritesRef at `currentUser.uid ` at `activity_id` to true
+                    // ASN REQ 4 : update favoritesRef at `currentUser.uid ` at `activity_id` to true              //待解
                     var vm = this;
                     console.log(activity_id)
                     var id = vm.data.currentUser.uid;
@@ -272,19 +266,18 @@
                         vm.$set(vm.data.activities, snapshot.key, snapshot.val())
                         })
                     })
-
               // ASN REQ 3 : detect authentication changes :
                   // if login :
                       // set login user to vm.data.currentUser
             firebase.auth().onAuthStateChanged(function(user) {
                 if (user) {
                     var userData = user.toJSON();
+                    vm.$set(vm.data, "currentUser", userData)
+                    var id = vm.data.currentUser.uid;
                     usersRef
                     .child(userData.uid)
                     .update(userData)
                     .catch(errorCallback)
-                    vm.$set(vm.data, "currentUser", userData)
-                    var id = vm.data.currentUser.uid;
                     favoritesRef.child(id).on("value", function(snapshot) {
                         snapshot
                         .forEach(function(snapshot) {
@@ -292,9 +285,6 @@
                             console.log(vm.data.favorites);
                         })
                     })
-
-
-
           } else {
             // update vue to logout status
             vm.$set(vm.data, "currentUser", null)
@@ -302,7 +292,7 @@
         })
 
                 
-                      // ASN REQ 4 :
+            // ASN REQ 4 :
                       // listen on chages on favorite data of currentUser , and set it to vm.data.currentUser
 
                   // else : not login : set vm.data.currentUser to null
